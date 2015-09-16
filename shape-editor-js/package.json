@@ -1,0 +1,31 @@
+{
+  "name": "shape-editor-js",
+  "version": "0.0.0",
+  "description": "Uses Raphael.js to create a shape editing library",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/will-moore/shape-editor-js.git"
+  },
+  "keywords": [
+    "Raphael.js",
+    "shape",
+    "editor"
+  ],
+  "author": "Will Moore @will_j_moore",
+  "license": "GPL",
+  "bugs": {
+    "url": "https://github.com/will-moore/shape-editor-js/issues"
+  },
+  "homepage": "https://github.com/will-moore/shape-editor-js",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-concat": "^0.5.1",
+    "grunt-contrib-jshint": "^0.11.2",
+    "grunt-contrib-watch": "^0.6.1"
+  }
+}
