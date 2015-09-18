@@ -19,18 +19,11 @@ $(function() {
     var teacherAC = new ShapeManager(teacher_AC_ID, WIDTH, HEIGHT, options);
     teacherAC.setState("SELECT");
 
-    var studentFAShapeManager = new ShapeManager("focusAreasCanvas",
-        WIDTH, HEIGHT, options);
-    studentFAShapeManager.setState("SELECT");
+    var studentFAC = new ShapeManager("studentFocusAreasCanvas", WIDTH, HEIGHT, options);
+    studentFAC.setState("SELECT");
 
-    var studentAShapeManager = new ShapeManager("answersCanvas",
-        WIDTH, HEIGHT, options);
-    studentAShapeManager.setState("SELECT");
-
-    $("input[name='sstate']").click(function() {
-        var state = $(this).val();
-        studentAShapeManager.setState(state);
-    });
+    var studentAC = new ShapeManager("studentAnswersCanvas", WIDTH, HEIGHT, options);
+    studentAC.setState("POINT");
 
     var moveBackground = function(panel_id) {
         $("#"+panel_id).removeClass("foreground");
@@ -151,10 +144,32 @@ $(function() {
     };
 
     var init_student_panel = function() {
-        studentFAShapeManager.deleteAll();
-        studentAShapeManager.deleteAll();
-        studentFAShapeManager.addShapesJson(focus_areas);
+        studentFAC.deleteAll();
+        studentAC.deleteAll();
+        studentFAC.addShapesJson(focus_areas);
     };
+
+    $("#btn-add-st-answer").click(function() {
+        studentAC.setState("POINT");
+        activateButton($("#btn-add-st-answer"));
+        deactivateButton($("#btn-sel-st-answer"));
+        deactivateButton($("#btn-del-st-answer"));
+    });
+
+    $("#btn-sel-st-answer").click(function() {
+        studentAC.setState("SELECT");
+        deactivateButton($("#btn-add-st-answer"));
+        activateButton($("#btn-sel-st-answer"));
+        deactivateButton($("#btn-del-st-answer"));
+    });
+
+    $("#btn-del-st-answer").click(function() {
+        studentAC.deleteAll();
+        studentAC.setState("SELECT");
+        deactivateButton($("#btn-add-st-answer"));
+        deactivateButton($("#btn-sel-st-answer"));
+        activateButton($("#btn-del-st-answer"));
+    });
 
     var get_distance = function(point_1, point_2) {
         var distance = Math.sqrt(Math.pow(point_1.x - point_2.x, 2) +
@@ -175,7 +190,7 @@ $(function() {
     };
 
     $("button[name='save-student-data']").click(function() {
-        var student_answers = studentAShapeManager.getShapesJson();
+        var student_answers = studentAC.getShapesJson();
         var results = {
             "good": 0,
             "bad": 0
