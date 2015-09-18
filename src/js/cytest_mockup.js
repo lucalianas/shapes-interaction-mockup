@@ -203,10 +203,50 @@ $(function() {
             "good": 0,
             "bad": 0
         };
+        var good_answers = [];
+        var bad_answers = [];
         for (var x=0; x<student_answers.length; x++) {
-            results[check_answer(student_answers[x])] += 1;
+            var res = check_answer(student_answers[x]);
+            if (res === "good")
+                good_answers.push(student_answers[x]);
+            else
+                bad_answers.push(student_answers[x]);
+            results[res] += 1;
         }
 
         console.log(results);
+
+        // Giving visual feedback to student
+        console.log("VISUAL FEEDBACK");
+        console.log(good_answers);
+        console.log(bad_answers);
+        studentAC.deleteAll();
+        for (var x=0; x<good_answers.length; x++) {
+            good_answers[x].strokeColor = "#66FF66";
+            good_answers[x].fillColor = "#66FF66";
+            good_answers[x].type = "Point";
+            good_answers[x].fillOpacity = 0.75;
+        }
+        studentAC.addShapesJson(good_answers);
+        for (var x=0; x<bad_answers.length; x++) {
+            bad_answers[x].strokeColor = "#FF0000";
+            bad_answers[x].fillColor = "#FF0000";
+            bad_answers[x].type = "Point";
+            bad_answers[x].fillOpacity = 0.75;
+        }
+        studentAC.addShapesJson(bad_answers);
+
+        // Draw correct answers as well
+        var correct_answers = answers;
+        for (var x=0; x<correct_answers.length; x++) {
+            correct_answers[x].strokeColor = "#aaaaaa";
+            correct_answers[x].fillColor = "#aaaaaa";
+            correct_answers[x].type = "Point";
+            correct_answers[x].fillOpacity = 0.5;
+        }
+        console.log(correct_answers);
+        studentFAC.deleteAll();
+        studentFAC.addShapesJson(focus_areas);
+        studentFAC.addShapesJson(correct_answers);
     });
 });
