@@ -28,64 +28,115 @@
 
         .workingArea {
             position: absolute;
+            display: inline-block;
+        }
+
+        .foreground {
+            z-index: 1;
+        }
+
+        .background {
+            z-index: 0;
+        }
+
+        .canvas {
+            width: 512px;
+            height: 512px;
+            margin: 20px 20px 20px 25px;
+        }
+
+        .row {
+            margin-left: 2px !important;
         }
     </style>
 
-    <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <!-- Raphael library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js"></script>
+
     <script src="dist/js/shape-editor.js"></script>
     <script src="src/js/cytest_mockup.js"></script>
 </head>
 
 <body>
-        <div>
-            <button name="switch-panel">Switch to student panel</button>
+<div>
+    <div style="width:550px !important;">
+        <button class="btn btn-danger btn-block" name="switch-panel"
+                style="margin-left: 10px !important; margin-right: -10px !important"
+                disabled>Switch to student panel</button>
+    </div>
+
+    <!-- TEACHER PANEL SIMULATOR -->
+    <div id="teacher-panel" style="width:550px">
+        <div class="container-fluid">
+            <h2 class="text-center text-primary">TEACHER PANEL</h3>
         </div>
 
-        <!-- TEACHER PANEL SIMULATOR -->
-        <div id="teacher-panel" class="workingArea">
-            <h3>TEACHER PANEL</h3>
-
-            <div class="toolbar">
-                SELECT SHAPE
-                <input type="radio" name="tstate" checked value="SELECT"/> <br>
-                ADD FOCUS AREAS
-                <input type="radio" name="tstate" value="RECT"/> <br>
-                ADD ANSWERS
-                <input type="radio" name="tstate" value="POINT"/>
+        <div class="row">
+            <div class="col-xs-6">
+                <div class="well" id="focus-area-panel">
+                    <button type="button" id="btn-sel-farea" name="tfabuttons"
+                            class="btn btn-info target btn-block">SELECT FOCUS AREA</button>
+                    <button type="button" id="btn-add-farea" name="tfabuttons"
+                            class="btn btn-default target btn-block">ADD FOCUS AREA</button>
+                    <button type="button" id="btn-delete-farea" name="tfabuttons"
+                            class="btn btn-default target btn-block">CLEAR FOCUS AREAS</button>
+                </div>
             </div>
 
-            <div class="toolbar">
-                <button name="save-teacher-data">SAVE</button>
-            </div>
-
-            <div class="imageWrapper">
-                <img src="http://jcb-dataviewer.rupress.org/jcb/render_image/124/10/0/"
-                     style="width: 512px; height:512px">
-                <div id="teacherCanvas" style="width:512px; height:512px"></div>
-            </div>
-        </div>
-        <!-- STUDENT PANEL SIMULATOR -->
-        <div id="student-panel" class="hidden workingArea">
-            <h3>STUDENT PANEL</h3>
-
-            <div class="toolbar">
-                SELECT ANSWER
-                <input type="radio" name="sstate" checked value="SELECT"/> <br>
-                ADD ANSWER
-                <input type="radio" name="sstate" value="POINT"/>
-            </div>
-
-            <div class="toolbar">
-                <button name="save-student-data">SAVE ANSWERS</button>
-            </div>
-
-            <div class="imageWrapper">
-                <img src="http://jcb-dataviewer.rupress.org/jcb/render_image/124/10/0/"
-                     style="width: 512px; height:512px">
-                <div id="focusAreasCanvas" style="width:512px; height:512px"></div>
-                <div id="answersCanvas" style="width: 512px; height: 512px"></div>
+            <div class="col-xs-6">
+                <div class="well" id="answers-area-panel">
+                    <button type="button" id="btn-sel-answer" name="tabuttons"
+                            class="btn btn-default target btn-block">SELECT ANSWER</button>
+                    <button type="button" id="btn-add-answer" name="tabuttons"
+                            class="btn btn-default target btn-block">ADD ANSWER</button>
+                    <button type="button" id="btn-delete-answer" name="tabuttons"
+                            class="btn btn-default target btn-block">CLEAR ANSWERS</button>
+                </div>
             </div>
         </div>
+
+        <div style="margin-left: 10px !important; margin-right: -10px !important">
+            <button class="btn btn-block btn-info" name="save-teacher-data">SAVE</button>
+        </div>
+
+        <div class="imageWrapper">
+            <img src="http://jcb-dataviewer.rupress.org/jcb/render_image/124/10/0/"
+                 class="canvas">
+            <div id="teacherFocusAreasCanvas" class="canvas foreground"></div>
+            <div id="teacherAnswersCanvas" class="canvas background"></div>
+        </div>
+    </div>
+    <!-- STUDENT PANEL SIMULATOR -->
+    <div id="student-panel" class="hidden workingArea">
+        <h3>STUDENT PANEL</h3>
+
+        <div class="toolbar">
+            SELECT ANSWER
+            <input type="radio" name="sstate" checked value="SELECT"/> <br>
+            ADD ANSWER
+            <input type="radio" name="sstate" value="POINT"/>
+        </div>
+
+        <div class="toolbar">
+            <button name="save-student-data">SAVE ANSWERS</button>
+        </div>
+
+        <div class="imageWrapper">
+            <img src="http://jcb-dataviewer.rupress.org/jcb/render_image/124/10/0/"
+                 style="width: 512px; height:512px">
+            <div id="focusAreasCanvas" class="background" style="width:512px; height:512px"></div>
+            <div id="answersCanvas" class="foreground" style="width: 512px; height: 512px"></div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

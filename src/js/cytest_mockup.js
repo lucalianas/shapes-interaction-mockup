@@ -10,9 +10,14 @@ $(function() {
 
     var options = {};
 
-    var teacherShapeManager = new ShapeManager("teacherCanvas",
-        WIDTH, HEIGHT, options);
-    teacherShapeManager.setState("SELECT");
+    var teacher_FAC_ID = "teacherFocusAreasCanvas";
+    var teacher_AC_ID = "teacherAnswersCanvas";
+
+    var teacherFAC = new ShapeManager(teacher_FAC_ID, WIDTH, HEIGHT, options);
+    teacherFAC.setState("SELECT");
+
+    var teacherAC = new ShapeManager(teacher_AC_ID, WIDTH, HEIGHT, options);
+    teacherAC.setState("SELECT");
 
     var studentFAShapeManager = new ShapeManager("focusAreasCanvas",
         WIDTH, HEIGHT, options);
@@ -22,32 +27,104 @@ $(function() {
         WIDTH, HEIGHT, options);
     studentAShapeManager.setState("SELECT");
 
-    $("input[name='tstate']").click(function() {
-        var state = $(this).val();
-        teacherShapeManager.setState(state);
-    });
-
     $("input[name='sstate']").click(function() {
         var state = $(this).val();
         studentAShapeManager.setState(state);
     });
 
-    $("button[name='save-teacher-data']").click(function() {
-        // Clear previously saved focus_areas and answers
-        focus_areas = [];
-        answers = [];
+    var moveBackground = function(panel_id) {
+        $("#"+panel_id).removeClass("foreground");
+        $("#"+panel_id).addClass("background");
+    };
 
-        var shapes_json = teacherShapeManager.getShapesJson();
-        console.log(shapes_json);
-        for (var x=0; x<shapes_json.length; x++) {
-            if (shapes_json[x].type === "Rectangle") {
-                focus_areas.push(shapes_json[x]);
-            } else if (shapes_json[x].type === "Ellipse") {
-                answers.push(shapes_json[x]);
-            } else {
-                console.warn("Problem with SHAPE " + shapes_json[x]);
-            }
-        }
+    var moveForeground = function(panel_id) {
+        $("#"+panel_id).removeClass("background");
+        $("#"+panel_id).addClass("foreground");
+    };
+
+    var activateButton = function(btn) {
+        btn.addClass("btn-info");
+        btn.removeClass("btn-default");
+    };
+
+    var deactivateButton = function(btn) {
+        btn.addClass("btn-default");
+        btn.removeClass("btn-info");
+    };
+
+    $("#btn-sel-farea").click(function() {
+        console.log("Clicked SELECT SHAPE");
+        moveForeground(teacher_FAC_ID);
+        moveBackground(teacher_AC_ID);
+        teacherFAC.setState("SELECT");
+        deactivateButton($("button[name='tabuttons']"));
+        activateButton($("#btn-sel-farea"));
+        deactivateButton($("#btn-add-farea"));
+        deactivateButton($("#btn-delete-farea"));
+    });
+
+    $("#btn-add-farea").click(function() {
+        console.log("Clicked ADD RECT");
+        moveForeground(teacher_FAC_ID);
+        moveBackground(teacher_AC_ID);
+        teacherFAC.setState("RECT");
+        deactivateButton($("button[name='tabuttons']"));
+        deactivateButton($("#btn-sel-farea"));
+        activateButton($("#btn-add-farea"));
+        deactivateButton($("#btn-delete-farea"));
+    });
+
+    $("#btn-delete-farea").click(function() {
+        console.log("Clicked DELETE FOCUS AREAS");
+        moveForeground(teacher_FAC_ID);
+        moveBackground(teacher_AC_ID);
+        teacherFAC.deleteAll();
+        deactivateButton($("button[name='tabuttons']"));
+        deactivateButton($("#btn-sel-farea"));
+        deactivateButton($("#btn-add-farea"));
+        activateButton($("#btn-delete-farea"));
+    });
+
+    $("#btn-sel-answer").click(function() {
+        console.log("Clicked SELECT POINT");
+        moveForeground(teacher_AC_ID);
+        moveBackground(teacher_FAC_ID);
+        teacherAC.setState("SELECT");
+        deactivateButton($("button[name='tfabuttons']"));
+        activateButton($("#btn-sel-answer"));
+        deactivateButton($("#btn-add-answer"));
+        deactivateButton($("#btn-delete-answer"));
+    });
+
+    $("#btn-add-answer").click(function() {
+        console.log("Clicked ADD POINT");
+        moveForeground(teacher_AC_ID);
+        moveBackground(teacher_FAC_ID);
+        teacherAC.setState("POINT");
+        deactivateButton($("button[name='tfabuttons']"));
+        deactivateButton($("#btn-sel-answer"));
+        activateButton($("#btn-add-answer"));
+        deactivateButton($("#btn-delete-answer"));
+    });
+
+    $("#btn-delete-answer").click(function() {
+        console.log("Clicked DELETE ANSWERS");
+        moveForeground(teacher_AC_ID);
+        moveBackground(teacher_FAC_ID);
+        teacherAC.deleteAll();
+        deactivateButton($("button[name='tfabuttons']"));
+        deactivateButton($("#btn-sel-answer"));
+        deactivateButton($("#btn-add-answer"));
+        activateButton($("#btn-delete-answer"));
+    });
+
+    $("button[name='save-teacher-data']").click(function() {
+        focus_areas = teacherFAC.getShapesJson();
+        answers = teacherAC.getShapesJson();
+
+        console.log(focus_areas, answers);
+
+        $("button[name='switch-panel']").prop('disabled', false);
     });
 
     $("button[name='switch-panel']").click(function() {
@@ -65,11 +142,12 @@ $(function() {
     });
 
     var init_teacher_panel = function() {
-        teacherShapeManager.deleteAll();
+        teacherFAC.deleteAll();
+        teacherAC.deleteAll();
         console.log(focus_areas);
-        teacherShapeManager.addShapesJson(focus_areas);
+        teacherFAC.addShapesJson(focus_areas);
         console.log(answers);
-        teacherShapeManager.addShapesJson(answers);
+        teacherAC.addShapesJson(answers);
     };
 
     var init_student_panel = function() {
