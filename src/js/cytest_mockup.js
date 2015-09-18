@@ -15,15 +15,23 @@ $(function() {
 
     var teacherFAC = new ShapeManager(teacher_FAC_ID, WIDTH, HEIGHT, options);
     teacherFAC.setState("SELECT");
+    teacherFAC.setStrokeColor("cyan");
+    teacherFAC.setStrokeWidth(5);
 
     var teacherAC = new ShapeManager(teacher_AC_ID, WIDTH, HEIGHT, options);
     teacherAC.setState("SELECT");
+    teacherAC.setStrokeColor("yellow");
+    teacherAC.setFillOpacity(0.01);
 
     var studentFAC = new ShapeManager("studentFocusAreasCanvas", WIDTH, HEIGHT, options);
     studentFAC.setState("SELECT");
+    teacherFAC.setStrokeColor("cyan");
+    teacherFAC.setStrokeWidth(5);
 
     var studentAC = new ShapeManager("studentAnswersCanvas", WIDTH, HEIGHT, options);
     studentAC.setState("POINT");
+    studentAC.setStrokeColor("gray");
+    studentAC.setFillOpacity(0.50);
 
     var moveBackground = function(panel_id) {
         $("#"+panel_id).removeClass("foreground");
