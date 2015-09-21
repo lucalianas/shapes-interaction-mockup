@@ -2,8 +2,8 @@
 /* globals console: false */
 
 $(function() {
-    var WIDTH = 512,
-        HEIGHT = 512;
+    var WIDTH = 612,
+        HEIGHT = 612;
 
     var focus_areas = [];
     var answers = [];
