@@ -10,44 +10,122 @@ $(function() {
 
     var options = {};
 
-    var teacherShapeManager = new ShapeManager("teacherCanvas",
-        WIDTH, HEIGHT, options);
-    teacherShapeManager.setState("SELECT");
+    var teacher_FAC_ID = "teacherFocusAreasCanvas";
+    var teacher_AC_ID = "teacherAnswersCanvas";
 
-    var studentFAShapeManager = new ShapeManager("focusAreasCanvas",
-        WIDTH, HEIGHT, options);
-    studentFAShapeManager.setState("SELECT");
+    var teacherFAC = new ShapeManager(teacher_FAC_ID, WIDTH, HEIGHT, options);
+    teacherFAC.setState("SELECT");
+    teacherFAC.setStrokeColor("cyan");
+    teacherFAC.setStrokeWidth(5);
 
-    var studentAShapeManager = new ShapeManager("answersCanvas",
-        WIDTH, HEIGHT, options);
-    studentAShapeManager.setState("SELECT");
+    var teacherAC = new ShapeManager(teacher_AC_ID, WIDTH, HEIGHT, options);
+    teacherAC.setState("SELECT");
+    teacherAC.setStrokeColor("yellow");
+    teacherAC.setFillOpacity(0.01);
 
-    $("input[name='tstate']").click(function() {
-        var state = $(this).val();
-        teacherShapeManager.setState(state);
+    var studentFAC = new ShapeManager("studentFocusAreasCanvas", WIDTH, HEIGHT, options);
+    studentFAC.setState("SELECT");
+    teacherFAC.setStrokeColor("cyan");
+    teacherFAC.setStrokeWidth(5);
+
+    var studentAC = new ShapeManager("studentAnswersCanvas", WIDTH, HEIGHT, options);
+    studentAC.setState("POINT");
+    studentAC.setStrokeColor("gray");
+    studentAC.setFillOpacity(0.50);
+
+    var moveBackground = function(panel_id) {
+        $("#"+panel_id).removeClass("foreground");
+        $("#"+panel_id).addClass("background");
+    };
+
+    var moveForeground = function(panel_id) {
+        $("#"+panel_id).removeClass("background");
+        $("#"+panel_id).addClass("foreground");
+    };
+
+    var activateButton = function(btn) {
+        btn.addClass("btn-info");
+        btn.removeClass("btn-default");
+    };
+
+    var deactivateButton = function(btn) {
+        btn.addClass("btn-default");
+        btn.removeClass("btn-info");
+    };
+
+    $("#btn-sel-farea").click(function() {
+        console.log("Clicked SELECT SHAPE");
+        moveForeground(teacher_FAC_ID);
+        moveBackground(teacher_AC_ID);
+        teacherFAC.setState("SELECT");
+        deactivateButton($("button[name='tabuttons']"));
+        activateButton($("#btn-sel-farea"));
+        deactivateButton($("#btn-add-farea"));
+        deactivateButton($("#btn-delete-farea"));
     });
 
-    $("input[name='sstate']").click(function() {
-        var state = $(this).val();
-        studentAShapeManager.setState(state);
+    $("#btn-add-farea").click(function() {
+        console.log("Clicked ADD RECT");
+        moveForeground(teacher_FAC_ID);
+        moveBackground(teacher_AC_ID);
+        teacherFAC.setState("RECT");
+        deactivateButton($("button[name='tabuttons']"));
+        deactivateButton($("#btn-sel-farea"));
+        activateButton($("#btn-add-farea"));
+        deactivateButton($("#btn-delete-farea"));
+    });
+
+    $("#btn-delete-farea").click(function() {
+        console.log("Clicked DELETE FOCUS AREAS");
+        moveForeground(teacher_FAC_ID);
+        moveBackground(teacher_AC_ID);
+        teacherFAC.deleteAll();
+        deactivateButton($("button[name='tabuttons']"));
+        deactivateButton($("#btn-sel-farea"));
+        deactivateButton($("#btn-add-farea"));
+        activateButton($("#btn-delete-farea"));
+    });
+
+    $("#btn-sel-answer").click(function() {
+        console.log("Clicked SELECT POINT");
+        moveForeground(teacher_AC_ID);
+        moveBackground(teacher_FAC_ID);
+        teacherAC.setState("SELECT");
+        deactivateButton($("button[name='tfabuttons']"));
+        activateButton($("#btn-sel-answer"));
+        deactivateButton($("#btn-add-answer"));
+        deactivateButton($("#btn-delete-answer"));
+    });
+
+    $("#btn-add-answer").click(function() {
+        console.log("Clicked ADD POINT");
+        moveForeground(teacher_AC_ID);
+        moveBackground(teacher_FAC_ID);
+        teacherAC.setState("POINT");
+        deactivateButton($("button[name='tfabuttons']"));
+        deactivateButton($("#btn-sel-answer"));
+        activateButton($("#btn-add-answer"));
+        deactivateButton($("#btn-delete-answer"));
+    });
+
+    $("#btn-delete-answer").click(function() {
+        console.log("Clicked DELETE ANSWERS");
+        moveForeground(teacher_AC_ID);
+        moveBackground(teacher_FAC_ID);
+        teacherAC.deleteAll();
+        deactivateButton($("button[name='tfabuttons']"));
+        deactivateButton($("#btn-sel-answer"));
+        deactivateButton($("#btn-add-answer"));
+        activateButton($("#btn-delete-answer"));
     });
 
     $("button[name='save-teacher-data']").click(function() {
-        // Clear previously saved focus_areas and answers
-        focus_areas = [];
-        answers = [];
+        focus_areas = teacherFAC.getShapesJson();
+        answers = teacherAC.getShapesJson();
 
-        var shapes_json = teacherShapeManager.getShapesJson();
-        console.log(shapes_json);
-        for (var x=0; x<shapes_json.length; x++) {
-            if (shapes_json[x].type === "Rectangle") {
-                focus_areas.push(shapes_json[x]);
-            } else if (shapes_json[x].type === "Ellipse") {
-                answers.push(shapes_json[x]);
-            } else {
-                console.warn("Problem with SHAPE " + shapes_json[x]);
-            }
-        }
+        console.log(focus_areas, answers);
+
+        $("button[name='switch-panel']").prop('disabled', false);
     });
 
     $("button[name='switch-panel']").click(function() {
@@ -65,18 +143,41 @@ $(function() {
     });
 
     var init_teacher_panel = function() {
-        teacherShapeManager.deleteAll();
+        teacherFAC.deleteAll();
+        teacherAC.deleteAll();
         console.log(focus_areas);
-        teacherShapeManager.addShapesJson(focus_areas);
+        teacherFAC.addShapesJson(focus_areas);
         console.log(answers);
-        teacherShapeManager.addShapesJson(answers);
+        teacherAC.addShapesJson(answers);
     };
 
     var init_student_panel = function() {
-        studentFAShapeManager.deleteAll();
-        studentAShapeManager.deleteAll();
-        studentFAShapeManager.addShapesJson(focus_areas);
+        studentFAC.deleteAll();
+        studentAC.deleteAll();
+        studentFAC.addShapesJson(focus_areas);
     };
+
+    $("#btn-add-st-answer").click(function() {
+        studentAC.setState("POINT");
+        activateButton($("#btn-add-st-answer"));
+        deactivateButton($("#btn-sel-st-answer"));
+        deactivateButton($("#btn-del-st-answer"));
+    });
+
+    $("#btn-sel-st-answer").click(function() {
+        studentAC.setState("SELECT");
+        deactivateButton($("#btn-add-st-answer"));
+        activateButton($("#btn-sel-st-answer"));
+        deactivateButton($("#btn-del-st-answer"));
+    });
+
+    $("#btn-del-st-answer").click(function() {
+        studentAC.deleteAll();
+        studentAC.setState("SELECT");
+        deactivateButton($("#btn-add-st-answer"));
+        deactivateButton($("#btn-sel-st-answer"));
+        activateButton($("#btn-del-st-answer"));
+    });
 
     var get_distance = function(point_1, point_2) {
         var distance = Math.sqrt(Math.pow(point_1.x - point_2.x, 2) +
@@ -97,15 +198,55 @@ $(function() {
     };
 
     $("button[name='save-student-data']").click(function() {
-        var student_answers = studentAShapeManager.getShapesJson();
+        var student_answers = studentAC.getShapesJson();
         var results = {
             "good": 0,
             "bad": 0
         };
+        var good_answers = [];
+        var bad_answers = [];
         for (var x=0; x<student_answers.length; x++) {
-            results[check_answer(student_answers[x])] += 1;
+            var res = check_answer(student_answers[x]);
+            if (res === "good")
+                good_answers.push(student_answers[x]);
+            else
+                bad_answers.push(student_answers[x]);
+            results[res] += 1;
         }
 
         console.log(results);
+
+        // Giving visual feedback to student
+        console.log("VISUAL FEEDBACK");
+        console.log(good_answers);
+        console.log(bad_answers);
+        studentAC.deleteAll();
+        for (var x=0; x<good_answers.length; x++) {
+            good_answers[x].strokeColor = "#66FF66";
+            good_answers[x].fillColor = "#66FF66";
+            good_answers[x].type = "Point";
+            good_answers[x].fillOpacity = 0.75;
+        }
+        studentAC.addShapesJson(good_answers);
+        for (var x=0; x<bad_answers.length; x++) {
+            bad_answers[x].strokeColor = "#FF0000";
+            bad_answers[x].fillColor = "#FF0000";
+            bad_answers[x].type = "Point";
+            bad_answers[x].fillOpacity = 0.75;
+        }
+        studentAC.addShapesJson(bad_answers);
+
+        // Draw correct answers as well
+        var correct_answers = answers;
+        for (var x=0; x<correct_answers.length; x++) {
+            correct_answers[x].strokeColor = "#aaaaaa";
+            correct_answers[x].fillColor = "#aaaaaa";
+            correct_answers[x].type = "Point";
+            correct_answers[x].fillOpacity = 0.5;
+        }
+        console.log(correct_answers);
+        studentFAC.deleteAll();
+        studentFAC.addShapesJson(focus_areas);
+        studentFAC.addShapesJson(correct_answers);
     });
 });
