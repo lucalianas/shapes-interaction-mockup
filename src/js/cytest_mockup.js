@@ -7,6 +7,7 @@ $(function() {
 
     var focus_areas = [];
     var answers = [];
+    var answers_paths = []; // used to check if student answers are correct
 
     var options = {};
 
@@ -20,7 +21,7 @@ $(function() {
 
     var teacherAC = new ShapeManager(teacher_AC_ID, WIDTH, HEIGHT, options);
     teacherAC.setState("SELECT");
-    teacherAC.setStrokeColor("yellow");
+    teacherAC.setStrokeColor("blue");
     teacherAC.setFillOpacity(0.01);
 
     var studentFAC = new ShapeManager("studentFocusAreasCanvas", WIDTH, HEIGHT, options);
@@ -101,7 +102,7 @@ $(function() {
         console.log("Clicked ADD POINT");
         moveForeground(teacher_AC_ID);
         moveBackground(teacher_FAC_ID);
-        teacherAC.setState("POINT");
+        teacherAC.setState("ELLIPSE");
         deactivateButton($("button[name='tfabuttons']"));
         deactivateButton($("#btn-sel-answer"));
         activateButton($("#btn-add-answer"));
@@ -122,9 +123,10 @@ $(function() {
     $("button[name='save-teacher-data']").click(function() {
         focus_areas = teacherFAC.getShapesJson();
         answers = teacherAC.getShapesJson();
-
-        console.log(focus_areas, answers);
-
+        var shapes = teacherAC.getShapes();
+        for (var x=0; x<shapes.length; x++) {
+            answers_paths.push(shapes[x].getPath());
+        }
         $("button[name='switch-panel']").prop('disabled', false);
     });
 
@@ -179,18 +181,10 @@ $(function() {
         activateButton($("#btn-del-st-answer"));
     });
 
-    var get_distance = function(point_1, point_2) {
-        var distance = Math.sqrt(Math.pow(point_1.x - point_2.x, 2) +
-                                 Math.pow(point_1.y - point_2.y, 2));
-        return distance;
-    };
-
     var check_answer = function(student_answer) {
-        for (var x=0; x<answers.length; x++) {
-            var p1 = {"x": student_answer.cx, "y": student_answer.cy};
-            var p2 = {"x": answers[x].cx, "y": answers[x].cy};
-            var dist = get_distance(p1, p2);
-            if (dist <= answers[x].rx) {
+        for (var x=0; x < answers_paths.length; x++) {
+            if (Raphael.isPointInsidePath(answers_paths[x],
+                    student_answer.cx, student_answer.cy)) {
                 return "good";
             }
         }
@@ -241,7 +235,6 @@ $(function() {
         for (var x=0; x<correct_answers.length; x++) {
             correct_answers[x].strokeColor = "#aaaaaa";
             correct_answers[x].fillColor = "#aaaaaa";
-            correct_answers[x].type = "Point";
             correct_answers[x].fillOpacity = 0.5;
         }
         console.log(correct_answers);
