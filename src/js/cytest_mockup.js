@@ -205,6 +205,7 @@ $(function() {
         studentAC.setState("POINT");
         activateButton($("#btn-add-st-answer"));
         deactivateButton($("#btn-sel-st-answer"));
+        deactivateButton($("#btn-clear-st-answer"));
         deactivateButton($("#btn-del-st-answer"));
     });
 
@@ -212,15 +213,28 @@ $(function() {
         studentAC.setState("SELECT");
         deactivateButton($("#btn-add-st-answer"));
         activateButton($("#btn-sel-st-answer"));
+        deactivateButton($("#btn-clear-st-answer"));
         deactivateButton($("#btn-del-st-answer"));
     });
 
-    $("#btn-del-st-answer").click(function() {
+    $("#btn-clear-st-answer").click(function() {
         studentAC.deleteAll();
         studentAC.setState("SELECT");
         deactivateButton($("#btn-add-st-answer"));
         deactivateButton($("#btn-sel-st-answer"));
-        activateButton($("#btn-del-st-answer"));
+        activateButton($("#btn-clear-st-answer"), "btn-danger");
+        deactivateButton($("#btn-del-st-answer"));
+    });
+
+    $("#btn-del-st-answer").click(function() {
+        studentAC.deleteSelected();
+        deactivateButton($("#btn-add-st-answer"));
+        deactivateButton($("#btn-sel-st-answer"));
+        deactivateButton($("#btn-clear-st-answer"));
+        activateButton($("#btn-del-st-answer"), "btn-danger");
+        var $selbtn = $("#btn-sel-st-answer");
+        $selbtn.click();
+        $selbtn.focus();
     });
 
     var check_answer = function(student_answer) {
