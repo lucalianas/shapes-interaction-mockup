@@ -44,14 +44,17 @@ $(function() {
         $("#"+panel_id).addClass("foreground");
     };
 
-    var activateButton = function(btn) {
-        btn.addClass("btn-info");
+    var activateButton = function(btn, btn_class) {
+        if (btn_class === undefined)
+            btn_class = "btn-info";
+        btn.addClass(btn_class);
         btn.removeClass("btn-default");
     };
 
     var deactivateButton = function(btn) {
         btn.addClass("btn-default");
         btn.removeClass("btn-info");
+        btn.removeClass("btn-danger");
     };
 
     $("#btn-sel-farea").click(function() {
@@ -63,6 +66,7 @@ $(function() {
         activateButton($("#btn-sel-farea"));
         deactivateButton($("#btn-add-farea"));
         deactivateButton($("#btn-delete-farea"));
+        deactivateButton($("#btn-delete-selected-farea"));
     });
 
     $("#btn-add-farea").click(function() {
@@ -74,6 +78,23 @@ $(function() {
         deactivateButton($("#btn-sel-farea"));
         activateButton($("#btn-add-farea"));
         deactivateButton($("#btn-delete-farea"));
+        deactivateButton($("#btn-delete-selected-farea"));
+    });
+
+    $("#btn-delete-selected-farea").click(function() {
+        console.log("Clicked DELETE SELECTED AREA");
+        teacherFAC.deleteSelected();
+        moveForeground(teacher_FAC_ID);
+        moveBackground(teacher_AC_ID);
+        deactivateButton($("button[name='tabuttons']"));
+        deactivateButton($("#btn-sel-farea"));
+        deactivateButton($("#btn-add-farea"));
+        deactivateButton($("#btn-delete-farea"));
+        activateButton($("#btn-delete-selected-farea"), "btn-danger");
+        // selected focus area deleted, return to SELECT mode
+        var $selbtn = $("#btn-sel-farea");
+        $selbtn.focus();
+        $selbtn.click();
     });
 
     $("#btn-delete-farea").click(function() {
@@ -84,7 +105,8 @@ $(function() {
         deactivateButton($("button[name='tabuttons']"));
         deactivateButton($("#btn-sel-farea"));
         deactivateButton($("#btn-add-farea"));
-        activateButton($("#btn-delete-farea"));
+        activateButton($("#btn-delete-farea"), "btn-danger");
+        deactivateButton($("#btn-delete-selected-farea"));
     });
 
     $("#btn-sel-answer").click(function() {
@@ -96,6 +118,7 @@ $(function() {
         activateButton($("#btn-sel-answer"));
         deactivateButton($("#btn-add-answer"));
         deactivateButton($("#btn-delete-answer"));
+        deactivateButton($("btn-delete-selected-answer"));
     });
 
     $("#btn-add-answer").click(function() {
@@ -107,6 +130,24 @@ $(function() {
         deactivateButton($("#btn-sel-answer"));
         activateButton($("#btn-add-answer"));
         deactivateButton($("#btn-delete-answer"));
+        deactivateButton($("btn-delete-selected-answer"));
+
+    });
+
+    $("#btn-delete-selected-answer").click(function() {
+        console.log("Clicked DELETE SELECTED");
+        teacherAC.deleteSelected();
+        moveForeground(teacher_AC_ID);
+        moveBackground(teacher_FAC_ID);
+        deactivateButton($("button[name='tfabuttons']"));
+        deactivateButton($("#btn-sel-answer"));
+        deactivateButton($("#btn-add-answer"));
+        deactivateButton($("#btn-delete-answer"));
+        activateButton($("btn-delete-selected-answer"), "btn-danger");
+        // selected shape deleted, return to SELECT mode
+        var $selbtn = $("#btn-sel-answer");
+        $selbtn.focus();
+        $selbtn.click();
     });
 
     $("#btn-delete-answer").click(function() {
@@ -117,7 +158,8 @@ $(function() {
         deactivateButton($("button[name='tfabuttons']"));
         deactivateButton($("#btn-sel-answer"));
         deactivateButton($("#btn-add-answer"));
-        activateButton($("#btn-delete-answer"));
+        activateButton($("#btn-delete-answer"), "btn-danger");
+        deactivateButton($("#btn-delete-selected-answer"));
     });
 
     $("button[name='save-teacher-data']").click(function() {
